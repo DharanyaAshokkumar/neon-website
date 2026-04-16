@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>CRT NEON | Laptop Vault — Retro Futuristic Showroom</title>
+  <!-- Google Fonts + Font Awesome 6 (Free Icons) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* ---------- GLOBAL RESET & CRT DARK THEME ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at 20% 30%, #03070f, #010101);
+      color: #e0f2fe;
+      overflow-x: hidden;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    /* ========== CRT EFFECTS: SCANLINES + FLICKER ========== */
+    .crt::before {
+      content: " ";
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 255, 255, 0.03) 0px,
+        rgba(0, 255, 255, 0.03) 2px,
+        transparent 2px,
+        transparent 8px
+      );
+      pointer-events: none;
+      z-index: 999;
+      animation: scanMove 10s linear infinite;
+    }
+
+    @keyframes scanMove {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 30px; }
+    }
+
+    /* subtle flicker for text glow */
+    @keyframes flickerGlow {
+      0% { text-shadow: 0 0 1px #0ff, 0 0 3px #0ff; opacity: 0.99; }
+      50% { text-shadow: 0 0 4px #f0f, 0 0 8px #0ff; opacity: 1; }
+      100% { text-shadow: 0 0 2px #0ff, 0 0 4px #0ff; opacity: 0.98; }
+    }
+
+    .crt-glow {
+      animation: flickerGlow 2.8s infinite;
+    }
+
+    /* animated background canvas (glowing particles + connections) */
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      display: block;
+      background: #01040c;
+    }
+
+    /* main content layer */
+    .main-container {
+      position: relative;
+      z-index: 2;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px 24px 50px;
+    }
+
+    /* ----- HEADER / NAVIGATION (neon edges) ----- */
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0 20px;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.4);
+      margin-bottom: 30px;
+      backdrop-filter: blur(5px);
+    }
+
+    .logo h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(130deg, #0ff, #b0f, #0ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.5px;
+    }
+    .logo span {
+      font-size: 0.7rem;
+      color: #7aa9c4;
+      letter-spacing: 1px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      font-weight: 500;
+    }
+    .nav-links a {
+      color: #cae9ff;
+      text-decoration: none;
+      transition: 0.2s;
+      font-size: 0.95rem;
+    }
+    .nav-links a:hover {
+      color: #0ff;
+      text-shadow: 0 0 5px cyan;
+    }
+
+    .search-cart {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .search-box {
+      background: rgba(8, 18, 28, 0.8);
+      border: 1px solid #1f6d7a;
+      border-radius: 60px;
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      backdrop-filter: blur(4px);
+    }
+    .search-box input {
+      background: transparent;
+      border: none;
+      color: #fff;
+      outline: none;
+      font-size: 0.85rem;
+      width: 170px;
+    }
+    .search-box i {
+      color: #0ff;
+    }
+    .cart-icon {
+      position: relative;
+      cursor: pointer;
+      font-size: 1.6rem;
+      color: #caf0ff;
+      transition: 0.2s;
+    }
+    .cart-icon:hover {
+      color: #0ff;
+      transform: scale(1.05);
+    }
+    .cart-count {
+      position: absolute;
+      top: -8px;
+      right: -12px;
+      background: #ff2a6d;
+      color: white;
+      font-size: 0.7rem;
+      font-weight: bold;
+      border-radius: 30px;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 6px #ff2a6d;
+    }
+
+    /* HERO SECTION */
+    .hero {
+      text-align: center;
+      margin: 20px 0 50px;
+      padding: 36px 20px;
+      border-radius: 48px;
+      background: rgba(0, 10, 18, 0.55);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 255, 255, 0.4);
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.6);
+    }
+    .hero h2 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      background: linear-gradient(145deg, #fff, #0ff, #b66eff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      margin: 15px 0 20px;
+      color: #bbdef5;
+    }
+    .btn-glow {
+      background: transparent;
+      border: 2px solid #0ff;
+      padding: 12px 34px;
+      font-weight: 700;
+      border-radius: 60px;
+      color: #0ff;
+      cursor: pointer;
+      transition: 0.25s;
+      font-size: 1rem;
+    }
+    .btn-glow:hover {
+      background: #0ff;
+      color: #0a0e1a;
+      box-shadow: 0 0 18px cyan;
+    }
+
+    /* products grid */
+    .section-title {
+      font-size: 2rem;
+      margin: 40px 0 25px;
+      border-left: 5px solid #0ff;
+      padding-left: 20px;
+    }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+    .product-card {
+      background: rgba(10, 22, 32, 0.7);
+      backdrop-filter: blur(8px);
+      border-radius: 32px;
+      border: 1px solid rgba(0, 255, 255, 0.35);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 12px 24px -12px black;
+    }
+    .product-card:hover {
+      transform: translateY(-6px);
+      border-color: #0ff;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    }
+    .card-img {
+      width: 100%;
+      height: 210px;
+      object-fit: cover;
+      border-bottom: 2px solid rgba(0,255,255,0.5);
+      transition: 0.3s;
+    }
+    .card-info {
+      padding: 18px;
+    }
+    .card-info h3 {
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+    .price {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #0ff;
+      margin: 8px 0;
+    }
+    .rating {
+      color: #ffcd4a;
+      margin: 6px 0;
+      letter-spacing: 1px;
+    }
+    .desc {
+      font-size: 0.8rem;
+      color: #b7d9f0;
+      margin: 12px 0;
+    }
+    .card-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .btn-cart, .btn-view {
+      flex: 1;
+      background: transparent;
+      border: 1px solid #2f9faf;
+      padding: 8px 0;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      color: #eef5ff;
+    }
+    .btn-cart {
+      background: rgba(0, 255, 255, 0.08);
+    }
+    .btn-cart:hover {
+      background: #0ff;
+      color: #000;
+      border-color: #0ff;
+    }
+    .btn-view:hover {
+      background: #b0f;
+      border-color: #b0f;
+      color: white;
+    }
+
+    /* CART SIDEBAR (Professional) */
+    .cart-overlay {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      display: none;
+      justify-content: flex-end;
+    }
+    .cart-sidebar {
+      width: 380px;
+      max-width: 90%;
+      background: #0c1620;
+      height: 100%;
+      border-left: 2px solid #0ff;
+      box-shadow: -8px 0 25px rgba(0,255,255,0.2);
+      display: flex;
+      flex-direction: column;
+      padding: 25px 20px;
+      position: relative;
+    }
+    .cart-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.5rem;
+      border-bottom: 1px solid cyan;
+      padding-bottom: 12px;
+    }
+    .cart-items {
+      flex: 1;
+      overflow-y: auto;
+      margin: 20px 0;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #2a4b5a;
+    }
+    .cart-item-info h4 {
+      font-size: 1rem;
+    }
+    .cart-item-price {
+      color: #0ff;
+    }
+    .remove-item {
+      background: none;
+      border: none;
+      color: #ff6b8b;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    .cart-total {
+      font-size: 1.4rem;
+      font-weight: bold;
+      border-top: 2px solid #0ff;
+      padding-top: 15px;
+      text-align: right;
+    }
+    .close-cart {
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: #0ff;
+    }
+    .checkout-btn {
+      background: #0ff;
+      color: #000;
+      border: none;
+      padding: 12px;
+      border-radius: 40px;
+      font-weight: bold;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+
+    /* Modal Quick View */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(2, 10, 18, 0.95);
+      backdrop-filter: blur(12px);
+      z-index: 1100;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background: #0f1b24;
+      max-width: 520px;
+      width: 90%;
+      border-radius: 36px;
+      border: 2px solid #0ff;
+      padding: 25px;
+      position: relative;
+      animation: fadeUp 0.2s;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: scale(0.96);}
+      to { opacity: 1; transform: scale(1);}
+    }
+    .modal-content img {
+      width: 100%;
+      border-radius: 24px;
+      margin-bottom: 15px;
+    }
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 22px;
+      font-size: 28px;
+      cursor: pointer;
+      color: #0ff;
+    }
+    .toast {
+      position: fixed;
+      bottom: 25px;
+      left: 25px;
+      background: #0a1620;
+      border-left: 6px solid #0ff;
+      padding: 12px 20px;
+      border-radius: 12px;
+      color: #0ff;
+      z-index: 1200;
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+    .footer {
+      margin-top: 50px;
+      border-top: 1px solid rgba(0,255,255,0.2);
+      padding: 30px 0 20px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .social i {
+      font-size: 1.4rem;
+      margin: 0 8px;
+      cursor: pointer;
+      transition: 0.2s;
+      color: #b2dcff;
+    }
+    .social i:hover { color: #0ff; text-shadow: 0 0 5px cyan; }
+
+    @media (max-width: 750px) {
+      .header { flex-direction: column; gap: 12px; }
+      .hero h2 { font-size: 1.9rem; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div class="crt"></div>
+
+<div class="main-container">
+  <header class="header">
+    <div class="logo">
+      <h1 class="crt-glow">⌘ CRT:VAULT</h1>
+      <span>neon edge | cyber laptops</span>
+    </div>
+    <div class="nav-links">
+      <a href="#">SHOWROOM</a>
+      <a href="#">DEALS</a>
+      <a href="#">REVIEWS</a>
+      <a href="#">SUPPORT</a>
+    </div>
+    <div class="search-cart">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Search laptop...">
+      </div>
+      <div class="cart-icon" id="cartIcon">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cartCount">0</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="hero">
+    <h2>⚡ RETRO CRT // NEXT-GEN POWER ⚡</h2>
+    <p>Limited edition laptops with soul of analog & speed of light</p>
+    <button class="btn-glow" id="heroShopBtn">⟁ EXPLORE COLLECTION ⟁</button>
+  </div>
+
+  <div class="section-title">
+    <i class="fas fa-microchip"></i>  LATEST ARRIVALS — NEON SERIES
+  </div>
+  <div id="productsGrid" class="products-grid"></div>
+
+  <div class="footer">
+    <div>© 2025 CRT:VAULT — cyber aesthetics, real performance.</div>
+    <div class="social">
+      <i class="fab fa-twitter"></i>
+      <i class="fab fa-instagram"></i>
+      <i class="fab fa-discord"></i>
+      <i class="fab fa-github"></i>
+    </div>
+  </div>
+</div>
+
+<!-- Cart Sidebar -->
+<div id="cartSidebar" class="cart-overlay">
+  <div class="cart-sidebar">
+    <div class="cart-header">
+      <span><i class="fas fa-cart-shopping"></i> YOUR CART</span>
+      <button class="close-cart" id="closeCartBtn">&times;</button>
+    </div>
+    <div id="cartItemsList" class="cart-items"></div>
+    <div id="cartTotalPrice" class="cart-total">Total: $0</div>
+    <button id="checkoutBtn" class="checkout-btn">PROCEED TO CHECKOUT →</button>
+  </div>
+</div>
+
+<!-- Quick View Modal -->
+<div id="quickModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <img id="modalImg" alt="laptop">
+    <h3 id="modalTitle"></h3>
+    <p id="modalDesc"></p>
+    <div id="modalPrice" style="font-size: 1.7rem; color:#0ff; margin:12px 0"></div>
+    <div id="modalRating"></div>
+    <button id="modalAddBtn" class="btn-cart" style="margin-top: 20px; width:100%;">Add to Cart</button>
+  </div>
+</div>
+
+<div id="toastMsg" style="display: none;" class="toast"></div>
+
+<script>
+  // -------- PRODUCT DATABASE (HIGH QUALITY LAPTOPS) --------
+  const laptops = [
+    { id: 1, name: "CRT X1 NEO", price: 1599, rating: 4.8, image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&h=300&fit=crop", desc: "i9-13980HX, RTX 4080, 32GB DDR5, 1TB SSD, 240Hz OLED Neon edition." },
+    { id: 2, name: "MACBOOK PRO M3", price: 2599, rating: 4.9, image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=300&fit=crop", desc: "M3 Max 40-core GPU, 48GB RAM, 2TB SSD, Liquid Retina XDR 16-inch." },
+    { id: 3, name: "RAZER BLADE 18", price: 3399, rating: 4.9, image: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=400&h=300&fit=crop", desc: "Intel i9-14900HX, RTX 4090, 64GB RAM, 4K Mini-LED 200Hz." },
+    { id: 4, name: "ASUS ROG STRIX", price: 1699, rating: 4.7, image: "https://images.unsplash.com/photo-1593642702749-b7d2a804fbcf?w=400&h=300&fit=crop", desc: "Ryzen 9 7945HX, RTX 4070, 32GB, 1TB, QHD 240Hz Nebula." },
+    { id: 5, name: "DELL XPS 17", price: 2199, rating: 4.8, image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&h=300&fit=crop", desc: "i9-13900H, RTX 4060, 32GB LPDDR5, 1TB, 4K+ touch." },
+    { id: 6, name: "HP SPECTRE FOLD", price: 2799, rating: 4.6, image: "https://images.unsplash.com/photo-1569770218135-bea267ed7e84?w=400&h=300&fit=crop", desc: "3-in-1 foldable OLED, i7-1360P, 16GB, 1TB, stylus included." },
+    { id: 7, name: "THINKPAD X1 CARBON", price: 1899, rating: 4.8, image: "https://images.unsplash.com/photo-1593642702909-dec73df255d7?w=400&h=300&fit=crop", desc: "14” 2.8K OLED, i7-1370P, 32GB RAM, 1TB SSD, ultra durable." },
+    { id: 8, name: "AERO 16 OLED", price: 1999, rating: 4.7, image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&h=300&fit=crop", desc: "i9-13900H, RTX 4070, 32GB, 1TB, 4K OLED, creator laptop." }
+  ];
+
+  // Global state
+  let cart = [];   // each item { id, name, price, quantity }
+  let filteredProducts = [...laptops];
+
+  // DOM elements
+  const productsContainer = document.getElementById('productsGrid');
+  const searchInput = document.getElementById('searchInput');
+  const cartCountSpan = document.getElementById('cartCount');
+  const cartSidebar = document.getElementById('cartSidebar');
+  const cartItemsDiv = document.getElementById('cartItemsList');
+  const cartTotalSpan = document.getElementById('cartTotalPrice');
+  const closeCartBtn = document.getElementById('closeCartBtn');
+  const cartIconBtn = document.getElementById('cartIcon');
+  const modal = document.getElementById('quickModal');
+  const modalImg = document.getElementById('modalImg');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalDesc = document.getElementById('modalDesc');
+  const modalPriceDiv = document.getElementById('modalPrice');
+  const modalRatingDiv = document.getElementById('modalRating');
+  const modalAddBtn = document.getElementById('modalAddBtn');
+  const toastDiv = document.getElementById('toastMsg');
+  let currentModalProduct = null;
+
+  // Helper: Toast message
+  function showToast(message, duration = 2000) {
+    toastDiv.textContent = message;
+    toastDiv.style.display = 'block';
+    setTimeout(() => {
+      toastDiv.style.display = 'none';
+    }, duration);
+  }
+
+  // update cart UI (badge + sidebar content)
+  function updateCartUI() {
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    cartCountSpan.innerText = totalItems;
+    // render sidebar content
+    if (!cartItemsDiv) return;
+    if (cart.length === 0) {
+      cartItemsDiv.innerHTML = '<div style="text-align:center; margin-top:40px;">🛒 Cart is empty<br>Add some neon power</div>';
+      cartTotalSpan.innerText = `Total: $0`;
+      return;
+    }
+    let itemsHtml = '';
+    let total = 0;
+    cart.forEach(item => {
+      const itemTotal = item.price * item.quantity;
+      total += itemTotal;
+      itemsHtml += `
+        <div class="cart-item" data-id="${item.id}">
+          <div class="cart-item-info">
+            <h4>${item.name}</h4>
+            <small>Qty: ${item.quantity}</small>
+          </div>
+          <div class="cart-item-price">$${itemTotal.toLocaleString()}</div>
+          <button class="remove-item" data-id="${item.id}"><i class="fas fa-trash-alt"></i></button>
+        </div>
+      `;
+    });
+    cartItemsDiv.innerHTML = itemsHtml;
+    cartTotalSpan.innerText = `Total: $${total.toLocaleString()}`;
+    // attach remove events
+    document.querySelectorAll('.remove-item').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = parseInt(btn.getAttribute('data-id'));
+        removeFromCart(id);
+      });
+    });
+  }
+
+  function removeFromCart(productId) {
+    const index = cart.findIndex(item => item.id === productId);
+    if (index !== -1) {
+      cart.splice(index, 1);
+      updateCartUI();
+      showToast(`🗑️ Item removed from cart.`);
+    }
+  }
+
+  function addToCart(product) {
+    const existing = cart.find(item => item.id === product.id);
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      cart.push({ id: product.id, name: product.name, price: product.price, quantity: 1 });
+    }
+    updateCartUI();
+    showToast(`➕ ${product.name} added to cart!`);
+  }
+
+  // Render products grid
+  function renderProducts(productsArray) {
+    productsContainer.innerHTML = '';
+    productsArray.forEach(prod => {
+      const stars = generateStars(prod.rating);
+      const card = document.createElement('div');
+      card.className = 'product-card';
+      card.innerHTML = `
+        <img class="card-img" src="${prod.image}" alt="${prod.name}" loading="lazy">
+        <div class="card-info">
+          <h3>${prod.name}</h3>
+          <div class="price">$${prod.price.toLocaleString()}</div>
+          <div class="rating">${stars}</div>
+          <div class="desc">${prod.desc.substring(0, 70)}${prod.desc.length > 70 ? '…' : ''}</div>
+          <div class="card-buttons">
+            <button class="btn-cart" data-id="${prod.id}"><i class="fas fa-cart-plus"></i> Add</button>
+            <button class="btn-view" data-id="${prod.id}"><i class="fas fa-eye"></i> View</button>
+          </div>
+        </div>
+      `;
+      productsContainer.appendChild(card);
+    });
+    // attach events
+    document.querySelectorAll('.btn-cart').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = parseInt(btn.getAttribute('data-id'));
+        const product = laptops.find(p => p.id === id);
+        if (product) addToCart(product);
+      });
+    });
+    document.querySelectorAll('.btn-view').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = parseInt(btn.getAttribute('data-id'));
+        const product = laptops.find(p => p.id === id);
+        if (product) openModal(product);
+      });
+    });
+  }
+
+  function generateStars(rating) {
+    const full = Math.floor(rating);
+    const half = rating % 1 >= 0.5 ? 1 : 0;
+    let stars = '';
+    for (let i = 0; i < full; i++) stars += '<i class="fas fa-star"></i>';
+    if (half) stars += '<i class="fas fa-star-half-alt"></i>';
+    for (let i = 0; i < 5 - full - half; i++) stars += '<i class="far fa-star"></i>';
+    return stars + ` ${rating}`;
+  }
+
+  function openModal(product) {
+    currentModalProduct = product;
+    modalImg.src = product.image;
+    modalTitle.innerText = product.name;
+    modalDesc.innerText = product.desc;
+    modalPriceDiv.innerText = `$${product.price.toLocaleString()}`;
+    modalRatingDiv.innerHTML = generateStars(product.rating);
+    modal.style.display = 'flex';
+  }
+  function closeModalFunc() {
+    modal.style.display = 'none';
+    currentModalProduct = null;
+  }
+
+  // filter products by search
+  function filterProductsBySearch() {
+    const query = searchInput.value.trim().toLowerCase();
+    if (query === "") filteredProducts = [...laptops];
+    else filteredProducts = laptops.filter(p => p.name.toLowerCase().includes(query));
+    renderProducts(filteredProducts);
+  }
+
+  // Cart sidebar toggles
+  function openCart() { cartSidebar.style.display = 'flex'; }
+  function closeCart() { cartSidebar.style.display = 'none'; }
+
+  // hero scroll
+  function scrollToProducts() {
+    document.querySelector('.section-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ---------- BACKGROUND ANIMATION: GLOWING PARTICLES + CRT NEBULA ----------
+  const canvas = document.getElementById('bg-canvas');
+  let ctx = canvas.getContext('2d');
+  let w, h;
+  let particles = [];
+  class FlowParticle {
+    constructor(x, y, radius, vx, vy, color) {
+      this.x = x; this.y = y; this.r = radius; this.vx = vx; this.vy = vy; this.color = color;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = this.color;
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = '#0ff';
+      ctx.fill();
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      if (this.x < 0 || this.x > w) this.vx *= -1;
+      if (this.y < 0 || this.y > h) this.vy *= -1;
+      this.draw();
+    }
+  }
+  function initBackground() {
+    w = window.innerWidth;
+    h = window.innerHeight;
+    canvas.width = w; canvas.height = h;
+    particles = [];
+    const count = 110;
+    for (let i = 0; i < count; i++) {
+      let r = Math.random() * 2.2 + 1;
+      let x = Math.random() * w;
+      let y = Math.random() * h;
+      let vx = (Math.random() - 0.5) * 0.55;
+      let vy = (Math.random() - 0.5) * 0.55;
+      let col = `rgba(${80 + Math.random() * 120}, ${180 + Math.random() * 75}, 255, 0.45)`;
+      particles.push(new FlowParticle(x, y, r, vx, vy, col));
+    }
+  }
+  function animateBg() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#01040c';
+    ctx.fillRect(0, 0, w, h);
+    for (let p of particles) p.update();
+    // draw connections
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(0, 200, 255, 0.12)';
+    ctx.lineWidth = 0.7;
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i+1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx+dy*dy);
+        if (dist < 100) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animateBg);
+  }
+  window.addEventListener('resize', () => {
+    initBackground();
+  });
+
+  // ---------- EVENT LISTENERS ----------
+  searchInput.addEventListener('input', filterProductsBySearch);
+  document.getElementById('heroShopBtn').addEventListener('click', scrollToProducts);
+  cartIconBtn.addEventListener('click', openCart);
+  closeCartBtn.addEventListener('click', closeCart);
+  window.addEventListener('click', (e) => { if (e.target === cartSidebar) closeCart(); });
+  document.querySelector('.close-modal').addEventListener('click', closeModalFunc);
+  window.addEventListener('click', (e) => { if (e.target === modal) closeModalFunc(); });
+  modalAddBtn.addEventListener('click', () => {
+    if (currentModalProduct) {
+      addToCart(currentModalProduct);
+      closeModalFunc();
+    }
+  });
+  document.getElementById('checkoutBtn').addEventListener('click', () => {
+    if(cart.length===0) showToast("Cart is empty, add items first!", 1500);
+    else { showToast("🚀 Proceeding to checkout (demo) ✨", 1800); closeCart(); }
+  });
+  // social icons demo
+  document.querySelectorAll('.social i').forEach(icon => {
+    icon.addEventListener('click', () => showToast(`🔮 Follow us on ${icon.classList[1]} for exclusive drops`, 1600));
+  });
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      showToast(`✨ ${link.innerText} portal opens soon — stay tuned`, 1300);
+    });
+  });
+
+  // initial render
+  renderProducts(laptops);
+  updateCartUI();
+  initBackground();
+  animateBg();
+  // extra CRT flicker class interval
+  setInterval(() => {
+    const glowElem = document.querySelector('.crt-glow');
+    if (glowElem) glowElem.style.textShadow = Math.random() > 0.85 ? '0 0 7px #f0f' : '0 0 3px #0ff';
+  }, 500);
+</script>
+</body>
+</html>
